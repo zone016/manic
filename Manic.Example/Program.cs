@@ -36,7 +36,7 @@ internal static class Program
         }
 
         var player = results[0];
-        
+
         player = IntPtr.Add(player, 0x02);
         player = manic.ReadVirtualMemory<IntPtr>(player);
         player = IntPtr.Subtract(player, 0x08);
@@ -45,19 +45,17 @@ internal static class Program
         WriteLine("i: Player found at 0x{0:X}", player);
         WriteLine("i: Have a good game pwning session");
         WriteLine("i: You can reach further distances");
-        WriteLine("i: Your legs are more stronger to");
         WriteLine("i: Press CTRL+C to exit Manic Example");
         WriteLine();
         
         var staminaAddress = IntPtr.Add(player, 0x0590);
         var maxStaminaAddress = IntPtr.Add(player, 0x0594);
         var maxInteractDistanceAddress = IntPtr.Add(player, 0x0528);
-        var maxCarryWeight = IntPtr.Add(player, 0x0558);
 
         while (true)
         {
             var stamina = manic.ReadVirtualMemory<float>(staminaAddress);
-            
+
             if (stamina <= 15)
             {
                 var maxStamina = manic.ReadVirtualMemory<float>(maxStaminaAddress);
@@ -67,8 +65,6 @@ internal static class Program
             }
             
             manic.WriteVirtualMemory(maxInteractDistanceAddress, 25.5);
-            manic.WriteVirtualMemory(maxCarryWeight, 100);
-            
             await Task.Delay(TimeSpan.FromMilliseconds(500));
         }
     }

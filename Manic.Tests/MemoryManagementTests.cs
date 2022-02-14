@@ -61,7 +61,11 @@ public class MemoryManagementTests
         Assert.AreNotEqual(baseAddress, IntPtr.Zero);
 
         var something = new byte[] {0x83, 0xC5, 0x40, 0xF3, 0x0F, 0x10, 0xCA, 0x83, 0xED, 0x40};
+        
         var pattern = new byte[]   {0x83, 0xC5, 0x00, 0x00, 0x00, 0x10, 0xCA, 0x00, 0xED, 0x40};
+        const string pattern2 = "83 C5 ?? ?? ?? 10 CA ?? ED 40";
+        const string pattern3 = "83c5??????10ca??ed40";
+        const string pattern4 = "83c5xxxxxx10caxxed40";
         
         var allocAddress = _manic.AllocateVirtualMemory(something.Length);
         _manic.WriteVirtualMemory(allocAddress, something);
@@ -69,6 +73,18 @@ public class MemoryManagementTests
         var lastAddress = IntPtr.Add(allocAddress, something.Length);
         var matches = _manic.BinaryPatternSearch(pattern, allocAddress, lastAddress).ToArray();
         
+        Assert.IsTrue(matches.Length == 1);
+        Assert.AreEqual(matches.First(), allocAddress);
+        
+        matches = _manic.BinaryPatternSearch(pattern2, allocAddress, lastAddress).ToArray();
+        Assert.IsTrue(matches.Length == 1);
+        Assert.AreEqual(matches.First(), allocAddress);
+        
+        matches = _manic.BinaryPatternSearch(pattern3, allocAddress, lastAddress).ToArray();
+        Assert.IsTrue(matches.Length == 1);
+        Assert.AreEqual(matches.First(), allocAddress);
+        
+        matches = _manic.BinaryPatternSearch(pattern4, allocAddress, lastAddress).ToArray();
         Assert.IsTrue(matches.Length == 1);
         Assert.AreEqual(matches.First(), allocAddress);
 

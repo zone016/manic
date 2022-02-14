@@ -68,9 +68,6 @@ public class Manic : IDisposable
 
     public void WriteVirtualMemory(IntPtr baseAddress, byte[] bytesToWrite)
     {
-        //TODO:
-        // - Query memory space to check if is possible to write instead of waiting an error from WriteProcessMemory.
-        
         var bufferHandle = GCHandle.Alloc(bytesToWrite, GCHandleType.Pinned);
         
         if (!Kernel32.WriteProcessMemory(_handle, baseAddress, bufferHandle.AddrOfPinnedObject(), 
@@ -93,9 +90,6 @@ public class Manic : IDisposable
     
     public void WriteVirtualMemory<TStruct>(IntPtr baseAddress, TStruct structToWrite) where TStruct : struct
     {
-        //TODO:
-        // - Query memory space to check if is possible to write instead of waiting an error from WriteProcessMemory.
-        
         var size = Marshal.SizeOf<TStruct>();
         var bufferHandle = GCHandle.Alloc(structToWrite, GCHandleType.Pinned);
         
@@ -327,21 +321,8 @@ public class Manic : IDisposable
                 );
 
                 // Simplistic, need to be improved.
-
                 var scan = Scan(memoryDump, pattern, memoryInformation.BaseAddress).ToList();
                 if (scan.Any()) matches.AddRange(scan);
-                // for (var i = 0; i < memoryDump.Length; i++)
-                // {
-                //     if (memoryDump[i] != pattern[0]) continue;
-                //     for (var j = 0; j < pattern.Length; j++)
-                //     {
-                //         if (pattern[j] != 0x00 && memoryDump[i + j] != pattern[j]) break;
-                //
-                //         if (j + 1 != pattern.Length) continue;
-                //         var address = IntPtr.Add(baseAddress, i);
-                //         matches.Add(address);
-                //     }
-                // }
             });
 
         return matches.ToImmutableList();
