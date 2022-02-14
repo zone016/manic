@@ -5,7 +5,7 @@ namespace Manic.Example;
 
 internal static class Program
 {
-    private static void Main()
+    private static async Task Main()
     {
         if (!Environment.Is64BitProcess)
         {
@@ -44,5 +44,32 @@ internal static class Program
         
         WriteLine("i: Player found at 0x{0:X}", player);
         WriteLine("i: Have a good game pwning session");
+        WriteLine("i: You can reach further distances");
+        WriteLine("i: Your legs are more stronger to");
+        WriteLine("i: Press CTRL+C to exit Manic Example");
+        WriteLine();
+        
+        var staminaAddress = IntPtr.Add(player, 0x0590);
+        var maxStaminaAddress = IntPtr.Add(player, 0x0594);
+        var maxInteractDistanceAddress = IntPtr.Add(player, 0x0528);
+        var maxCarryWeight = IntPtr.Add(player, 0x0558);
+
+        while (true)
+        {
+            var stamina = manic.ReadVirtualMemory<float>(staminaAddress);
+            
+            if (stamina <= 15)
+            {
+                var maxStamina = manic.ReadVirtualMemory<float>(maxStaminaAddress);
+
+                WriteLine("i: Low stamina detected ({0:F1}/{1:F0}), solving ;)", stamina, maxStamina);
+                manic.WriteVirtualMemory(staminaAddress, maxStamina);    
+            }
+            
+            manic.WriteVirtualMemory(maxInteractDistanceAddress, 25.5);
+            manic.WriteVirtualMemory(maxCarryWeight, 100);
+            
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
     }
 }
